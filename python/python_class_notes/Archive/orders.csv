@@ -1,0 +1,9 @@
+order_id,customer_id,period_id,amount
+O1,C1,P1,100
+O2,C1,P1,150
+O3,C2,P1,200
+O4,C3,P1,100
+O5,C1,P2,120
+O6,C2,P2,180
+O7,C3,P2,90
+O8,C4,P2,1000

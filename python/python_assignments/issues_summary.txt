@@ -1,0 +1,132 @@
+================================================================================
+IITGN Python Coding Assignment - High-Level Issues & Constraint Violations
+================================================================================
+This document lists the high-level bugs that cause code breaks (exceptions)
+or violate explicit assignment constraints across the question files.
+
+--------------------------------------------------------------------------------
+QUESTION 2: question2.py
+--------------------------------------------------------------------------------
+1. min_length validation is never called:
+   - Function `validate_min_length` is defined on line 33 but NEVER called inside
+     `prepare_messages`.
+   - Constraint: "min_length must be a positive integer excluding Booleans;
+     otherwise raise ValueError."
+   - Calling prepare_messages with min_length <= 0, True, or non-int does not
+     raise ValueError. Also, validate_min_length allows min_length=0 and bools.
+   - Fix: At the start of prepare_messages, call:
+     if type(min_length) is not int or min_length < 1:
+         raise ValueError("min_length must be a positive integer excluding Booleans")
+
+2. Punctuation stripping bug:
+   - `remove_spl_chars_from_sides` fails when a token has multiple leading
+     punctuation marks (e.g., "...word" becomes "..word" because of an early break).
+   - Fix: Replace the entire helper function with Python's built-in strip:
+     token = token.strip(".,!?;:")
+
+3. Missing set comprehension:
+   - Line 59 uses `set(flat_list)` instead of a set comprehension.
+   - Constraint: "use ... a set comprehension to construct the vocabulary."
+   - Fix:
+     result["vocabulary"] = sorted({token for tokens in token_lists for token in tokens})
+
+--------------------------------------------------------------------------------
+QUESTION 3: question3.py
+--------------------------------------------------------------------------------
+1. Unhandled Crash on Non-Dict Elements or Missing Keys:
+   - Line 74: `labels = [result["actual"].lower().strip() for result in results ...]`
+     accesses `result["actual"]` directly on raw `results` before validation.
+   - If results contains a string (e.g., "not a dict") -> raises TypeError: string indices must be integers.
+   - If a record is missing the "actual" key -> raises KeyError: 'actual'.
+   - Fix: Only extract labels from valid records:
+     valid_records = [r for r in results if is_valid_result(r)]
+     labels = [r["actual"].strip().lower() for r in valid_records]
+
+2. Category Summary Count Corruption:
+   - `by_actual` counts labels from invalid/rejected records, skewing the totals.
+   - Constraint: "With no valid records, accuracy is None and counts are zero.
+     The category summary and misclassified-ID list are empty."
+   - Fix: Compute by_actual using only `valid_records`. When valid_count == 0,
+     set answer["by_actual"] = {}.
+
+--------------------------------------------------------------------------------
+QUESTION 4: question4.py
+--------------------------------------------------------------------------------
+1. Converting Non-Strings to Strings:
+   - Lines 30-31: `elif type(id) in (int, float): filtered_ids.append(str(id))`
+     converts integers and floats into strings.
+   - Constraint explicitly states: "Do not convert non-string identifiers into strings.
+     Exclude invalid entries and report their zero-based positions for each input."
+   - Fix: Only accept non-empty strings. Any non-string (int, float, bool, None)
+     must have its index appended to invalid_indices.
+
+2. Silent Dropping of Other Types:
+   - Boolean values (True/False) or lists/dicts hit neither branch and are silently
+     dropped without recording their index in invalid_indices.
+   - Fix in get_filtered_ids_and_invalid_indices:
+     for i, item in enumerate(ids):
+         if type(item) is str:
+             stripped = item.strip()
+             if stripped:
+                 filtered_ids.append(stripped)
+             else:
+                 invalid_indices.append(i)
+         else:
+             invalid_indices.append(i)
+
+--------------------------------------------------------------------------------
+QUESTION 5: question5.py
+--------------------------------------------------------------------------------
+1. Priority Logic Crashes with ValueError:
+   - Line 16-17: `if priority is not None and priority not in curr_queue: curr_queue.remove(priority)`
+     calls `.remove(priority)` when priority is NOT in the list, raising:
+     ValueError: list.remove(x): x not in list.
+   - Condition must be: `if priority is not None and priority in curr_queue:`.
+
+2. add_priority Does Not Return the Queue:
+   - Line 62: `user_queue = add_priority(user_queue, priority)` turns user_queue
+     into None because `add_priority` lacks `return curr_queue`.
+
+3. Incoming Tasks Inverted Condition:
+   - Lines 24-25 in add_incoming_to_queue: `if item in curr_queue: curr_queue.append(item)`
+     only appends items that are ALREADY in the queue, discarding all new items!
+   - Condition must be: `if item not in curr_queue: curr_queue.append(item)`.
+
+--------------------------------------------------------------------------------
+QUESTION 6: question6.py
+--------------------------------------------------------------------------------
+1. Line 28 Indented Inside the For Loop:
+   - Line 28: `result_dict["parameters"].update(...)` is indented with 12 spaces
+     inside `for key in parameter_updates:`.
+   - If parameter_updates has a valid key followed by an unknown key
+     (e.g., {"threshold": 0.7, "unknown": 99}), the unknown key is inserted in
+     iteration 1 and NEVER raises KeyError!
+   - Fix: Unindent line 28 by 4 spaces (outside the loop).
+
+--------------------------------------------------------------------------------
+QUESTION 9: question9.py
+--------------------------------------------------------------------------------
+1. Priority Violation Between TypeError and ValueError:
+   - Lines 17-21 inspects item-by-item:
+     for text in texts:
+         if type(text) != str: raise TypeError
+         if len(text.strip()) == 0: raise ValueError
+   - If a batch contains a blank string before a non-string (e.g. [" ", 123]),
+     it raises ValueError when it hits " ".
+   - Constraint explicitly states: "If a batch contains both non-string items and
+     blank strings, raise TypeError."
+   - Fix: Validate types across the entire list first, then validate non-emptiness:
+     for text in texts:
+         if not isinstance(text, str):
+             raise TypeError("All items must be strings")
+     for text in texts:
+         if not text.strip():
+             raise ValueError("Strings cannot be empty after trimming")
+
+================================================================================
+QUESTIONS WITH NO BREAKING ISSUES (ALL EDGE CASES PASS):
+- Question 1 (question1.py)  : All edge cases pass.
+- Question 7 (question7.py)  : All edge cases pass.
+- Question 8 (question8.py)  : All edge cases pass.
+- Question 10 (question10.py): All edge cases pass.
+================================================================================

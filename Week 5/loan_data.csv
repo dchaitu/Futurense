@@ -1,0 +1,9 @@
+Name,Income,Education,Gender,JobStability,LoanApproved
+Mohan,3200,B.tech,Male,1.2,Yes
+Andrea,3800,M.tech,Female,2.5,Yes
+Joe,4100,B.tech,Male,0.8,No
+Virat,4500,Phd,Male,3.6,Yes
+Abdul,5200,M.tech,Male,2.1,Yes
+Riya,6100,B.tech,Female,0.9,No
+Sofia,NaN,Phd,Female,1.7,Yes
+Elon Musk,10000000,Phd,Male,15,Yes

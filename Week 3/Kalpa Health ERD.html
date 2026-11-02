@@ -1,0 +1,305 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Kalpa Health ERD</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root {
+  --bg:#f5f5fc;--surface:#fff;--s2:#eaeaf8;--bd:#c0c0e0;
+  --acc:#5b5bd6;--acc-dim:#eaeaf8;--acc-fg:#3030a0;
+  --warn-bg:#fef3c7;--warn-bd:#d97706;--warn-fg:#7c4700;
+  --ok-bg:#dcfce7;--ok-fg:#14532d;
+  --fg:#1a1a4a;--fg-m:#6060a0;color-scheme:light;
+}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#08081e;--surface:#10102a;--s2:#18183a;--bd:#28285a;
+  --acc:#9090f0;--acc-dim:#18183a;--acc-fg:#b8b8f8;
+  --warn-bg:#1a1000;--warn-bd:#d97706;--warn-fg:#f5bf60;
+  --ok-bg:#052210;--ok-fg:#4ade80;
+  --fg:#d8d8f8;--fg-m:#7070a8;color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#08081e;--surface:#10102a;--s2:#18183a;--bd:#28285a;
+  --acc:#9090f0;--acc-dim:#18183a;--acc-fg:#b8b8f8;
+  --warn-bg:#1a1000;--warn-bd:#d97706;--warn-fg:#f5bf60;
+  --ok-bg:#052210;--ok-fg:#4ade80;
+  --fg:#d8d8f8;--fg-m:#7070a8;color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);
+  font-family:"Plus Jakarta Sans",system-ui,sans-serif;
+  font-size:14px;line-height:1.5}
+.hdr{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;
+  background:var(--surface);border-bottom:1px solid var(--bd)}
+.hdr-top{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;
+  padding:12px max(16px,env(safe-area-inset-left,0px)) 8px;
+  padding-right:max(16px,env(safe-area-inset-right,0px))}
+.hdr-top h1{font-size:15px;font-weight:700;margin:0;letter-spacing:-.01em}
+.hdr-sub{font-size:12px;color:var(--fg-m)}
+main{padding:24px max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-bottom:64px}
+.erd-card{background:var(--surface);border:1px solid var(--bd);
+  border-radius:8px;overflow:auto;padding:24px 16px}
+.erd-card pre.mermaid{margin:0;min-width:880px}
+.leg{display:flex;flex-wrap:wrap;gap:14px;margin:14px 0 0;
+  font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--fg-m)}
+.li{display:flex;align-items:center;gap:7px}
+.ls{display:inline-block;width:32px;height:0;
+  border-top:2px solid var(--acc)}
+.ld{border-top-style:dashed;border-top-color:var(--fg-m)}
+.sec-lbl{font-size:11px;font-weight:600;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--fg-m);
+  margin:24px 0 12px;padding-bottom:6px;border-bottom:1px solid var(--bd)}
+.co{font-size:12.5px;padding:10px 14px;border-radius:0 5px 5px 0;
+  margin-bottom:10px;display:flex;flex-direction:column;gap:5px}
+.co.warn{background:var(--warn-bg);border-left:3px solid var(--warn-bd);color:var(--warn-fg)}
+.co.info{background:var(--acc-dim);border-left:3px solid var(--acc);color:var(--acc-fg)}
+.co b{font-weight:600}
+code{font-family:"IBM Plex Mono",monospace;font-size:11.5px;
+  background:rgba(0,0,0,.07);padding:1px 4px;border-radius:3px}
+</style>
+
+<header class="hdr">
+  <div class="hdr-top">
+    <h1>Kalpa Health — Entity Relationship Diagram</h1>
+    <span class="hdr-sub">13 tables · crow's foot notation · scroll to pan the diagram</span>
+  </div>
+</header>
+
+<main>
+  <div class="erd-card">
+    <pre class="mermaid">
+%%{init: {"theme": "base", "themeVariables": {
+  "primaryColor": "#eaeaf8",
+  "primaryBorderColor": "#5b5bd6",
+  "primaryTextColor": "#1a1a4a",
+  "lineColor": "#5b5bd6",
+  "edgeLabelBackground": "#f5f5fc",
+  "fontFamily": "IBM Plex Mono, monospace",
+  "fontSize": "12px"
+}}}%%
+erDiagram
+    PATIENTS ||--o{ BOOKINGS : "patient_id"
+    PATIENTS ||--o{ INVOICES : "patient_id"
+    CLINICS  ||--o{ BOOKINGS : "clinic_id"
+    CLINICS  ||--o{ COLLECTIONS : "clinic_id"
+    CITIES   ||--o{ BOOKINGS : "city"
+    CITIES   }o..o{ PLAN : "city (comparison only)"
+    TESTS    ||--o{ RESULTS : "test_code"
+    BOOKINGS ||--o{ RESULTS : "booking_id"
+    BOOKINGS ||--o| COLLECTIONS : "booking_id"
+    BOOKINGS ||--o{ CAMPAIGN_BOOKINGS : "booking_id"
+    BOOKINGS ||--o| INVOICES : "booking_id"
+    CAMPAIGNS ||--o{ CAMPAIGN_BOOKINGS : "campaign_id"
+    INVOICES  ||--o{ PAYMENTS : "invoice_id (normalised)"
+    SETTLEMENTS ||--o{ PAYMENTS : "settlement_id"
+
+    PATIENTS {
+        text patient_id PK
+        text patient_name
+        text phone
+        date dob
+        text city
+        date signup_date
+    }
+    BOOKINGS {
+        text booking_id PK
+        text system
+        timestamp created_at
+        timestamp slot_at
+        text city
+        text clinic_id FK
+        text channel
+        text source
+        text patient_id FK
+        int n_tests
+        numeric amount_rs
+        text status
+    }
+    CLINICS {
+        text clinic_id PK
+        text city
+        text clinic_name
+        date opened_on
+        int has_lab
+        int slots_per_day
+    }
+    CITIES {
+        text city_code PK
+        text city
+        text region
+    }
+    TESTS {
+        text test_code PK
+        text test_name
+        numeric list_price_rs
+        int is_package
+    }
+    RESULTS {
+        text booking_id FK
+        text test_code FK
+        timestamp result_ts
+        numeric result_value
+        text result_flag
+    }
+    COLLECTIONS {
+        text booking_id FK
+        text clinic_id FK
+        text channel
+        text status
+        timestamp collected_at
+        text phlebotomist_id
+    }
+    CAMPAIGNS {
+        text campaign_id PK
+        text campaign_name
+        date starts
+        date ends
+        numeric waiver_rs
+    }
+    CAMPAIGN_BOOKINGS {
+        text booking_id FK
+        text campaign_id FK
+        numeric waiver_rs
+    }
+    INVOICES {
+        text invoice_id PK
+        date invoice_date
+        text booking_id FK
+        text patient_id FK
+        text city
+        text channel
+        numeric amount_rs
+    }
+    PAYMENTS {
+        text payment_id PK
+        text invoice_id FK
+        bigint amount_paise
+        text status
+        timestamp created_at
+        text method
+        text settlement_id FK
+    }
+    SETTLEMENTS {
+        text settlement_id PK
+        bigint amount_paise
+        bigint fees_paise
+        bigint tax_paise
+        text utr
+        timestamp created_at
+        text status
+    }
+    PLAN {
+        text city
+        text metric
+        int jan_2026
+        int feb_2026
+        int mar_2026
+        int apr_2026
+        int may_2026
+        int jun_2026
+    }
+    </pre>
+
+    <div class="leg">
+      <span class="li"><span class="ls"></span> solid — join key exists</span>
+      <span class="li"><span class="ls ld"></span> dashed — conceptual reference only</span>
+      <span class="li"><code>||</code> exactly one</span>
+      <span class="li"><code>o{</code> zero or more</span>
+      <span class="li"><code>o|</code> zero or one</span>
+    </div>
+  </div>
+
+  <p class="sec-lbl">Join notes</p>
+
+  <div class="co warn">
+    <div><b>PAYMENTS → INVOICES:</b> Raw gateway <code>notes_invoice_ref</code> has 3 formats — <code>INV-2025-000001</code>, <code>inv-2025-000001</code>, <code>INV2025000002</code>. Normalise to uppercase + dashes before joining to <code>invoice_id</code>.</div>
+    <div><b>PLAN → CITIES (dashed):</b> Comparison reference only — not a foreign key. Plan stores <code>"Bangalore"</code>; all other tables store <code>"Bengaluru"</code>. Map before comparing.</div>
+    <div><b>BOOKINGS — two source grains:</b> Legacy files are one row per <em>test</em>; Nova files are one row per <em>booking</em> (tests nested). The entity above is the normalised model after flattening both sources.</div>
+  </div>
+
+  <div class="co info">
+    <div><b>Amount units:</b> PAYMENTS and SETTLEMENTS store paise; INVOICES stores rupees (÷100 to reconcile).</div>
+    <div><b>COLLECTIONS is a subset of BOOKINGS:</b> Only bookings where a sample was taken appear here — cancelled and no-show bookings have no collection row.</div>
+    <div><b>RESULTS has no PK column:</b> Composite key is <code>(booking_id, test_code)</code>.</div>
+  </div>
+</main>
+
+<!--claude-mermaid-runtime-begin:3477-->
+<style>.mermaid-diagram{margin-block:4px}.mermaid-diagram svg{display:block;margin:0 auto;max-width:100%;height:auto}</style>
+<script src="/_runtime/mermaid-11.16.1.min.js"></script>
+<script>(function(){
+var CFG={"palettes":{"light":{"surface":"#f4efe4","text":"#42392e","line":"#8a7f6d","border":"#7a6c52","bg":"#fffdf8"},"dark":{"surface":"#262b34","text":"#f2f3f5","line":"#a8adb8","border":"#9aa4b8","bg":"#1f232b"}}};
+if(typeof mermaid==='undefined')return;
+var pres=Array.prototype.slice.call(document.querySelectorAll('pre.mermaid')).filter(function(p){if(p.hasAttribute('data-claude-mermaid-claimed'))return false;p.setAttribute('data-claude-mermaid-claimed','1');return true;});
+if(!pres.length)return;
+var mq=window.matchMedia?window.matchMedia('(prefers-color-scheme: dark)'):null;
+var root=document.documentElement;
+var items=pres.map(function(pre){
+var mount=document.createElement('div');mount.className='mermaid-diagram';
+return {pre:pre,mount:mount,src:pre.textContent||''};
+});
+var seq=0;
+var renderGen=0;
+var lastKey='';
+function pageBg(fallback){
+var els=[document.body,document.documentElement];
+for(var i=0;i<els.length;i++){
+var c=els[i]&&getComputedStyle(els[i]).backgroundColor;
+if(c&&c!=='transparent'&&c!=='rgba(0, 0, 0, 0)')return c;
+}
+return fallback;
+}
+function render(){
+var theme=root.getAttribute('data-theme');
+var dark=theme==='dark'||(!!(mq&&mq.matches)&&theme!=='light');
+var pal=dark?CFG.palettes.dark:CFG.palettes.light;
+var bg=pageBg(pal.bg);
+var key=(dark?'d':'l')+'|'+bg;
+if(key===lastKey)return;
+lastKey=key;
+var gen=++renderGen;
+var font=getComputedStyle(document.body).fontFamily||'sans-serif';
+var nat={useMaxWidth:false};
+mermaid.initialize({
+startOnLoad:false,securityLevel:'strict',theme:'base',
+flowchart:nat,sequence:nat,er:nat,state:nat,class:nat,pie:nat,
+gantt:nat,journey:nat,timeline:nat,gitGraph:nat,mindmap:nat,xyChart:nat,
+quadrantChart:nat,sankey:nat,c4:nat,requirement:nat,block:nat,
+packet:nat,kanban:nat,architecture:nat,radar:nat,
+themeVariables:{background:bg,mainBkg:pal.surface,primaryColor:pal.surface,
+primaryTextColor:pal.text,lineColor:pal.line,primaryBorderColor:pal.border,
+nodeBorder:pal.border,clusterBorder:pal.border,edgeLabelBackground:bg,
+clusterBkg:'rgba(127,127,127,0.07)',titleColor:pal.text,
+darkMode:dark,rowOdd:bg,rowEven:'rgba(127,127,127,0.07)',
+attributeBackgroundColorOdd:bg,attributeBackgroundColorEven:'rgba(127,127,127,0.07)',
+fontSize:'16px',fontFamily:font},
+themeCSS:'.node rect, .node circle, .node polygon, .node path, .cluster rect { stroke-width: 2px; }'
+});
+items.forEach(function(it){
+var id='claude-mermaid-'+seq++;
+mermaid.render(id,it.src).then(function(r){
+if(gen!==renderGen)return;
+var prev=it.pre.previousElementSibling;
+if(prev&&prev.className==='mermaid-diagram'&&prev!==it.mount)return;
+it.mount.innerHTML=r.svg;
+if(!it.mount.parentNode)it.pre.parentNode.insertBefore(it.mount,it.pre);
+it.pre.style.display='none';
+},function(){
+var scratch=document.getElementById(id);
+if(scratch)scratch.parentNode.removeChild(scratch);
+scratch=document.getElementById('d'+id);
+if(scratch)scratch.parentNode.removeChild(scratch);
+if(gen!==renderGen)return;
+if(it.mount.parentNode)it.mount.parentNode.removeChild(it.mount);
+it.pre.style.display='';
+});
+});
+}
+render();
+if(mq&&mq.addEventListener)mq.addEventListener('change',render);
+if(typeof MutationObserver!=='undefined')new MutationObserver(render).observe(root,{attributes:true,attributeFilter:['data-theme']});
+})();</script>
+<!--claude-mermaid-runtime-end-->
+
+</body></html>
