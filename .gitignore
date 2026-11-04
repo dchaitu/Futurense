@@ -1,2 +1,5 @@
-.idea
+.idea/
 *.csv.gz
+.venv/
+venv/
+
